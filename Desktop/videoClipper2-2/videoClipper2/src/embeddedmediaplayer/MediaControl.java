@@ -34,6 +34,7 @@ package embeddedmediaplayer;
 
 
 import com.sun.javafx.scene.control.skin.TableViewSkinBase;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -261,6 +262,9 @@ public class MediaControl extends VBox {
             }
         });
         mediaBar.getChildren().add(volumeSlider);
+       
+       
+        
         
         final Button btnNew = new Button("Create New Sub Clip");
         //creates "new" item from the current start and end
@@ -307,12 +311,14 @@ public class MediaControl extends VBox {
         });
         
         //ADDITIONAL FUNCTIONALITY
-        //changes the position of the master
+        
+       //changes the position of the master
         final Button btnNudgeBack = new Button("<<");
         btnNudgeBack.setTooltip(new Tooltip("Nudge Master Back"));
         btnNudgeBack.setStyle("-fx-max-width:infinity");
         btnNudgeBack.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {
+            public void handle(ActionEvent e) { 
+                mp.seek(getCurrentTime().subtract(Duration.seconds(1)));
             }
         });
         //changes the position of the master
@@ -321,38 +327,49 @@ public class MediaControl extends VBox {
         btnNudgeForward.setStyle("-fx-max-width:infinity");
         btnNudgeForward.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {  
+                mp.seek(getCurrentTime().add(Duration.seconds(1)));
             }
         });
         
         //changes the case of the selected
-        final Button btnAllCapsSelected= new Button("UPPER");
+        final Button btnAllCapsSelected = new Button("UPPER");
         btnAllCapsSelected.setTooltip(new Tooltip("Make Selected Item Upper Case"));
         btnAllCapsSelected.setStyle("-fx-max-width:infinity");
         btnAllCapsSelected.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                Clip p = table.getSelectionModel().getSelectedItem();
+                if (p==null) return;
+                    String Title = p.getTitle();
+                    p.setTitle(Title.toUpperCase());
+                    doTableRefresh(table);
             }
         });
         
         //moves the selected item bac
-        final Button btnNudgeSelectedStartBack = new Button("<<");
+        final Button btnNudgeSelectedStartBack = new Button("<");
         btnNudgeSelectedStartBack.setTooltip(new Tooltip("Nudge Selected Back"));
         btnNudgeSelectedStartBack.setStyle("-fx-max-width:infinity");
         btnNudgeSelectedStartBack.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                Clip p = table.getSelectionModel().getSelectedItem();
+                if (p==null) return;
+                int CurrentPosistion = p.getStart();
+                int ReducedOneSecond = CurrentPosistion - 1;
+                 p.setStart(ReducedOneSecond);
+                 doTableRefresh(table);
             }
         });
-        final Button btnNudgeSelectedStartForward = new Button(">>");
+        final Button btnNudgeSelectedStartForward = new Button(">");
         btnNudgeSelectedStartForward.setTooltip(new Tooltip("Nudge Selected Forward"));
         btnNudgeSelectedStartForward.setStyle("-fx-max-width:infinity");
         btnNudgeSelectedStartForward.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e) {  
-            }
-        });
-        
-        final Button btnAllCaps= new Button("UPPER");
-        btnNudgeBack.setStyle("-fx-max-width:infinity");
-        btnNudgeBack.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
+                Clip p = table.getSelectionModel().getSelectedItem();
+                if (p==null) return;
+                int CurrentPosistion = p.getEnd();
+                int IncreasedOneSecond = CurrentPosistion + 1;
+                 p.setEnd(IncreasedOneSecond);
+                 doTableRefresh(table);
             }
         });
         
@@ -498,21 +515,15 @@ public class MediaControl extends VBox {
           gridBox.add(atPlayTime,6,1,1,1);
           
           
-          
+         
           //ADDITIONAL FUNCTIONALITY
           
-          //gridBox.add(btnNudgeBack,6,1,1,1);
-          //gridBox.add(btnNudgeForward,6,1,1,1);
-          //gridBox.add(btnAllCaps,8,1,1,1);
-          //gridBox.add(btnNudgeSelectedStartBack,8,1,1,1);
-          //gridBox.add(btnNudgeSelectedStartForward,8,1,1,1);
-          
-          
-         
-          
-          
-          
-          
+          gridBox.add(btnNudgeBack,7,1,1,1); 
+          gridBox.add(btnNudgeForward,8,1,1,1);
+          gridBox.add(btnAllCapsSelected,9,1,1,1);
+          gridBox.add(btnNudgeSelectedStartBack,10,1,1,1);
+          gridBox.add(btnNudgeSelectedStartForward,11,1,1,1);
+       
           
           gridBox.add(table,0,2,10,5);
           
